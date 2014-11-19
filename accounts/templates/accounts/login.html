@@ -1,0 +1,22 @@
+{% extends 'accounts/base_form.html' %}
+
+{% block title %}Accounts - Login{% endblock %}
+
+{% block content %}
+<div class="container">
+<form class="form-accounts" method="post" action="{% url 'accounts:login' %}">
+<h2 class="form-accounts-heading">Please login</h2>
+{% if error_message %}
+<p class="text-error"><strong>{{ error_message }}</strong></p>
+{% endif %}
+{% csrf_token %}
+<input type="text" class="input-block-level" name="username" value="{{ username }}" placeholder="Username"/>
+<input type="password" class="input-block-level" name="password" value="" placeholder="Password"/>
+<input type="hidden" name="next" value="{{ next }}"/>
+<input type="submit" class="btn btn-large btn-primary" name="" value="Login" />
+<br />
+<br />
+Not a member of this site, please go ahead to <a href="{% url 'accounts:register' %}"><strong>Register</strong></a>.
+</form>
+</div>
+{% endblock %}

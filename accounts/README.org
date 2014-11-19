@@ -1,0 +1,3 @@
+* django-accounts
+
+Simple accounts app of django framework.
