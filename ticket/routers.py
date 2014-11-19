@@ -10,7 +10,7 @@ class MultiDBRouter(object):
         return None
 
     def db_for_write(self, model, **hints):
-        return not (model._meta.app_label == 'ticket' and model._meta.db_table in ('tb_area', 'user'))
+        return None
 
     def allow_relation(self, obj1, obj2, **hints):
         return None

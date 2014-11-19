@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+    'ticket',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -108,3 +109,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+# Template files
+
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+
+# Auth app
+
+LOGIN_REDIRECT_URL = '/ticket/'

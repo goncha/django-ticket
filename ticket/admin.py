@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from ticket.models import Channel, Problem, Solution
+
+admin.site.register(Channel, admin.ModelAdmin)
+admin.site.register(Problem, admin.ModelAdmin)
+admin.site.register(Solution, admin.ModelAdmin)
