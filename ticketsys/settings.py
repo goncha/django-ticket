@@ -74,7 +74,7 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306'
     },
-    'luhu': {
+    'apas': {
         'NAME': 'apas',
         'ENGINE': 'django.db.backends.mysql',
         'USER': 'root',
@@ -83,6 +83,8 @@ DATABASES = {
         'PORT': '3306'
     },
 }
+
+DATABASE_ROUTERS = ['ticket.routers.MultiDBRouter']
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
