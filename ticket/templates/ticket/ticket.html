@@ -1,0 +1,78 @@
+{% extends 'ticketsys/site.html' %}
+
+{% load staticfiles %}
+
+{% block main_content %}
+<div class="row">
+</div>
+
+<div class="row">
+<div class="col-md-offset-2 col-md-8 col-md-offset-1 col-xs-10">
+<form action="{% url 'ticket:new' %}" method="post" role="form" id="form">
+{% csrf_token %}
+{% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+{% for field in form.visible_fields %}
+<div class="form-group {% if field.errors %}has-error{% endif %}">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {% if field.errors %}
+  {% for error in field.errors %}
+  <p class="text-danger">{{ error|escape }}</p>
+  {% endfor %}
+  {% endif %}
+  {{ field }}
+</div>
+{% endfor %}
+<button type="button" id="submitButton" class="btn btn-primary">Save</button>
+</form>
+</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+$(function(){
+$("div.form-group input").addClass("form-control");
+$("div.form-group textarea").addClass("form-control")
+$("div.form-group select").addClass("form-control");
+$("#submitButton").click(function() {
+  $("#form").submit();
+});
+
+function getArea(id) {
+  $.get("{% url 'ticket:index' %}customer_area/" + id + "/", function(data) {
+    var values = data.values;
+    if (values.length > 0) {
+      var value = values[0];
+      $("#id_area_id").val(value.id);
+      $("#id_area_name").val(value.address);
+    }
+  });
+}
+
+function getCustomer(phone) {
+  $.get("{% url 'ticket:index' %}customer/" + phone + "/", function(data) {
+    var values = data.values;
+    if (values.length > 0) {
+      var value = values[0];
+      $("#id_user_id").val(value.id);
+      $("#id_user_name").val(value.nick_name);
+      getArea(value.area_id);
+    }
+  });
+}
+
+$("#id_user_phone").keyup(function() {
+  if (this.value.length == 11) {
+    var newValue = this.value;
+    var thisObj = $(this);
+    var origValue = thisObj.data('orig-value')
+    if (newValue != origValue) {
+      getCustomer(this.value);
+      thisObj.data('orig-value', newValue);
+    }
+  }
+});
+
+});
+</script>
+{% endblock %}

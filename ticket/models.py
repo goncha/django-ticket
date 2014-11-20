@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
-class ClientArea(models.Model):
+class CustomerArea(models.Model):
     class Meta:
         managed = False
         db_table = 'tb_area'
@@ -17,7 +17,7 @@ class ClientArea(models.Model):
         return self.address
 
 
-class Client(models.Model):
+class Customer(models.Model):
     class Meta:
         managed = False
         db_table = 'user'
@@ -25,6 +25,7 @@ class Client(models.Model):
     phone = models.CharField(max_length=16)
     area_id = models.BigIntegerField()
     nick_name = models.CharField(max_length=32)
+    real_name = models.CharField(max_length=32)
 
     def __unicode__(self):
         return self.phone
@@ -33,14 +34,8 @@ class Client(models.Model):
 class Problem(models.Model):
     '''问题类型：安装、注册、账户密码、登录、积分等'''
     name = models.CharField(max_length=16, unique=True)
+    owner_group = models.ForeignKey(Group, related_name='+')
     owner = models.ForeignKey(User, related_name='+')
-
-    def __unicode__(self):
-        return self.name
-
-
-class Solution(models.Model):
-    name = models.CharField(max_length=16, unique=True)
 
     def __unicode__(self):
         return self.name
@@ -52,13 +47,23 @@ class Channel(models.Model):
     def __unicode__(self):
         return self.name
 
-
 class Ticket(models.Model):
     STATUS_OPEN = 'open'
     STATUS_CLOSED = 'closed'
     STATUS_CHOICES = (
         (STATUS_OPEN, 'Open'),
         (STATUS_CLOSED, 'Closed'),
+    )
+
+    SOLUTION_CUSTOMER = 'customer'
+    SOLUTION_SERVICE = 'service'
+    SOLUTION_PRODUCT = 'product'
+    SOLUTION_OPERATION = 'operation'
+    SOLUTION_LIST = (
+        (SOLUTION_CUSTOMER, 'Customer'),
+        (SOLUTION_SERVICE, 'Service'),
+        (SOLUTION_PRODUCT, 'Product'),
+        (SOLUTION_OPERATION, 'Operation'),
     )
 
     user_id = models.BigIntegerField()
@@ -74,12 +79,12 @@ class Ticket(models.Model):
     description = models.TextField(blank=True)
     problem = models.ForeignKey(Problem, related_name='+')
     channel = models.ForeignKey(Channel, related_name='+')
-    solution = models.ForeignKey(Solution, related_name='+')
-    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default=STATUS_OPEN)
+    solution = models.CharField(max_length=16, choices=SOLUTION_LIST, default=SOLUTION_SERVICE)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_OPEN)
     create_time = models.DateTimeField()
     modify_time = models.DateTimeField()
     creator = models.ForeignKey(User, related_name='+')
-    modifer = models.ForeignKey(User, related_name='+', null=True, blank=True)
+    modifier = models.ForeignKey(User, related_name='+', null=True, blank=True)
 
     def __unicode__(self):
         return summary

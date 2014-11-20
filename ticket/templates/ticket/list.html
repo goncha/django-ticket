@@ -1,0 +1,34 @@
+{% extends 'ticketsys/site.html' %}
+
+{% load staticfiles %}
+
+{% block main_content %}
+<div class="row">
+<div class="col-md-12">
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Summmary</th>
+      <th>Problem</th>
+      <th>Solution</th>
+      <th>Status</th>
+      <th>Created</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ticket in ticket_list %}
+    <tr>
+      <td>{{ ticket.id }}</td>
+      <td>{{ ticket.summary }}</td>
+      <td>{{ ticket.problem }}</td>
+      <td>{{ ticket.solution }}</td>
+      <td>{{ ticket.status }}</td>
+      <td>{{ ticket.create_time }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+{% endblock %}
