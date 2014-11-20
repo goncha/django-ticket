@@ -2,6 +2,8 @@
 
 from django.db import models
 from django.contrib.auth.models import User, Group
+from django.core.urlresolvers import reverse
+
 
 class CustomerArea(models.Model):
     class Meta:
@@ -87,7 +89,11 @@ class Ticket(models.Model):
     modifier = models.ForeignKey(User, related_name='+', null=True, blank=True)
 
     def __unicode__(self):
-        return summary
+        return self.summary
+
+    def get_absolute_url(self):
+        return reverse('ticket:detail', args=(self.id,))
+
 
 
 class Comment(models.Model):

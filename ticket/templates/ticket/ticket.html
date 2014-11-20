@@ -4,6 +4,15 @@
 
 {% block main_content %}
 <div class="row">
+<div class="col-md-offset-2 col-md-8 col-md-offset-1 col-xs-10">
+<h1 class="page-header">
+{% if form.instance.pk %}
+Ticket #{{ form.instance.pk }}
+{% else %}
+Create new ticket
+{% endif %}
+</h1>
+</div>
 </div>
 
 <div class="row">
