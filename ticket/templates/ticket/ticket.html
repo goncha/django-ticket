@@ -17,7 +17,7 @@ Create new ticket
 
 <div class="row">
 <div class="col-md-offset-2 col-md-8 col-md-offset-1 col-xs-10">
-<form action="{% url 'ticket:new' %}" method="post" role="form" id="form">
+<form action="{% if form.instance.pk %}{% url 'ticket:detail' form.instance.pk %}{% else %}{% url 'ticket:new' %}{% endif %}" method="post" role="form" id="form">
 {% csrf_token %}
 {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
 {% for field in form.visible_fields %}

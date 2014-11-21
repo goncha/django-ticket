@@ -4,6 +4,33 @@
 
 {% block main_content %}
 
+
+
+<div class="row">
+<div class="col-md-12">
+  <form action="{% url 'ticket:index' %}" class="form-horizontal" method="get" role="form" id="form">
+    <input id="id-page" name="page" type="hidden" value=""/>
+    {% for field in form %}
+    <div class="form-group">
+      <label for="{{ field.id_for_label }}" class="col-md-2 control-label">{{ field.label }}</label>
+      <div class="col-md-4">
+	{{ field }}
+	{% if field.errors %}
+	{% for error in field.errors %}
+	<p class="text-danger">{{ error|escape }}</p>
+	{% endfor %}
+	{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+    <div class="form-group">
+    <button type="button" id="submitButton" class="col-md-offset-5 btn btn-primary">Browse</button>
+    </div>
+  </form>
+</div>
+</div>
+
+
 <div class="row">
 <div class="col-md-12">
 <table class="table table-striped">
@@ -23,8 +50,8 @@
       <td><a href="{% url 'ticket:detail' ticket.id %}">{{ ticket.id }}<a></td>
       <td>{{ ticket.summary }}</td>
       <td>{{ ticket.problem }}</td>
-      <td>{{ ticket.solution }}</td>
-      <td>{{ ticket.status }}</td>
+      <td>{{ ticket.get_solution_display }}</td>
+      <td>{{ ticket.get_status_display }}</td>
       <td>{{ ticket.create_time }}</td>
     </tr>
     {% endfor %}
@@ -39,10 +66,10 @@
     <nav>
       <ul class="pager">
 	{% if tickets.has_previous %}
-	<li class="previous"><a href="?page={{ tickets.previous_page_number }}"><span aria-hidden="true">&larr;</span>Older</a></li>
+	<li class="previous"><a href="javascript:gotoPage({{ tickets.previous_page_number }})"><span aria-hidden="true">&larr;</span>Older</a></li>
 	{% endif %}
 	{% if tickets.has_next %}
-	<li class="next"><a href="?page={{ tickets.next_page_number }}">Newer<span aria-hidden="true">&rarr;</span></a></li>
+	<li class="next"><a href="javascript:gotoPage({{ tickets.next_page_number }})">Newer<span aria-hidden="true">&rarr;</span></a></li>
 	{% endif %}
       </ul>
     </nav>
@@ -50,4 +77,20 @@
 </div>
 {% endif %}
 
+{% endblock %}
+
+{% block script %}
+<script class="javascript">
+$("div.form-group input").addClass("form-control");
+$("div.form-group textarea").addClass("form-control")
+$("div.form-group select").addClass("form-control");
+$("#submitButton").click(function() {
+  $("#form").submit();
+});
+
+function gotoPage(page) {
+  $("#id-page").val(page);
+  $("#form").submit();
+}
+</script>
 {% endblock %}

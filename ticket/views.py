@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from ticket.models import Ticket, Visit, Comment, Customer, CustomerArea
-from ticket.forms import TicketForm
+from ticket.forms import TicketForm, TicketQueryForm
 
 @require_http_methods(['GET', 'POST'])
 @login_required
@@ -31,8 +31,23 @@ def new(request):
 @require_http_methods(['GET', 'POST'])
 @login_required
 def detail(request, ticket_id):
-    form = TicketForm(instance=get_object_or_404(Ticket, pk=ticket_id))
+    instance = get_object_or_404(Ticket, pk=ticket_id)
+    if request.method == 'GET':
+        form = TicketForm(instance=instance)
+    else:
+        form = TicketForm(request.POST)
+        if form.is_valid():
+            new_instance = form.instance
+            new_instance.pk = instance.pk
+            new_instance.creator = instance.creator
+            new_instance.create_time = instance.create_time
+            new_instance.modifier = request.user
+            new_instance.modify_time = timezone.now()
+            new_instance.save()
+
+            return redirect(form.instance)
     return render(request, 'ticket/ticket.html', {'form': form})
+
 
 
 @require_http_methods(['POST'])
@@ -50,9 +65,13 @@ def visit(request):
 @require_http_methods(['GET'])
 @login_required
 def index(request):
-    ticket_list = Ticket.objects.all()
-    paginator = Paginator(ticket_list, 10)
+    form = TicketQueryForm(request.GET)
+    if form.is_valid():
+        ticket_list = Ticket.objects.all()
+    else:
+        ticket_list = []
 
+    paginator = Paginator(ticket_list, 10)
     page = request.GET.get('page')
     try:
         tickets = paginator.page(page)
@@ -63,7 +82,11 @@ def index(request):
         # If page is out of range, deliver last page of results.
         tickets = paginator.page(paginator.num_pages)
 
-    return render(request, 'ticket/list.html', {'tickets': tickets})
+    return render(request, 'ticket/list.html', {
+        'tickets': tickets,
+        'form': form,
+    })
+
 
 
 @require_http_methods(['GET'])

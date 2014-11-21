@@ -37,9 +37,8 @@
 {% block script %}
 <script type="text/javascript">
 $(function(){
-$("#form input").addClass("form-control").attr("required", "required");
-$("#id_email").attr("placeholder", "Email");
-$("#id_phone").attr("placeholder", "Mobile phone");
+$("#id_email").addClass("form-control").attr("required", "required").attr("placeholder", "Email");
+$("#id_phone").addClass("form-control").attr("required", "required").attr("placeholder", "Mobile Number");
 });
 </script>
 {% endblock %}
