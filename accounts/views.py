@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate as auth_authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -8,16 +8,16 @@ from django.shortcuts import render, resolve_url
 from django.views.decorators.http import require_http_methods
 
 @require_http_methods(['GET', 'POST'])
-def login_view(request):
+def login(request):
     context = {}
     if 'POST' == request.method:
         username = request.POST['username']
         password = request.POST['password']
-        user = authenticate(username=username, password=password)
+        user = auth_authenticate(username=username, password=password)
 
         if user is not None:
             if user.is_active:
-                login(request, user)
+                auth_login(request, user)
                 next = request.POST['next'] or \
                        resolve_url(settings.LOGIN_REDIRECT_URL)
                 return HttpResponseRedirect(next)
@@ -38,7 +38,7 @@ def login_view(request):
 
 
 @require_http_methods(['GET', 'POST'])
-def register_view(request):
+def register(request):
     context = {}
 
     if 'POST' == request.method:
@@ -72,7 +72,7 @@ def register_view(request):
 
 @require_http_methods(['GET', 'POST'])
 @login_required
-def password_view(request):
+def password(request):
     username = request.user.username
     context = {'username': username }
 
@@ -99,22 +99,22 @@ def password_view(request):
 
 
 @login_required
-def logout_view(request):
-    logout(request)
+def logout(request):
+    auth_logout(request)
     return HttpResponseRedirect(settings.LOGIN_URL)
 
 
 @login_required
-def home_view(request):
+def home(request):
     return HttpResponseRedirect(resolve_url(settings.LOGIN_REDIRECT_URL))
 
 
 @login_required
-def profile_view(request):
+def profile(request):
     context = {'user': request.user}
     return render(request, 'accounts/profile.html', context)
 
 
 @login_required
-def hello_view(request):
+def hello(request):
     return HttpResponse('Hello, %s' % request.user.username)
