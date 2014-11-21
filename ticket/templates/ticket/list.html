@@ -7,27 +7,39 @@
 
 
 <div class="row">
-<div class="col-md-12">
-  <form action="{% url 'ticket:index' %}" class="form-horizontal" method="get" role="form" id="form">
-    <input id="id-page" name="page" type="hidden" value=""/>
-    {% for field in form %}
-    <div class="form-group">
-      <label for="{{ field.id_for_label }}" class="col-md-2 control-label">{{ field.label }}</label>
-      <div class="col-md-4">
-	{{ field }}
-	{% if field.errors %}
-	{% for error in field.errors %}
-	<p class="text-danger">{{ error|escape }}</p>
-	{% endfor %}
-	{% endif %}
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	Query Parameters
+	<span class="pull-right">
+	  <a href="#" id="button-query-params-toggle" role="button" aria-expanded="false">
+	    <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+	  </a>
+	</span>
+      </div>
+      <div class="panel-body" style="display: none" id="panel-query-params">
+	<form action="{% url 'ticket:index' %}" class="form-horizontal" method="get" role="form" id="form">
+	  <input id="id-page" name="page" type="hidden" value=""/>
+	  {% for field in form %}
+	  <div class="form-group">
+	    <label for="{{ field.id_for_label }}" class="col-md-2 control-label">{{ field.label }}</label>
+	    <div class="col-md-4">
+	      {{ field }}
+	      {% if field.errors %}
+	      {% for error in field.errors %}
+	      <p class="text-danger">{{ error|escape }}</p>
+	      {% endfor %}
+	      {% endif %}
+	    </div>
+	  </div>
+	  {% endfor %}
+	  <div class="form-group">
+	    <button type="button" id="submitButton" class="col-md-offset-5 btn btn-primary">Query</button>
+	  </div>
+	</form>
       </div>
     </div>
-    {% endfor %}
-    <div class="form-group">
-    <button type="button" id="submitButton" class="col-md-offset-5 btn btn-primary">Browse</button>
-    </div>
-  </form>
-</div>
+  </div>
 </div>
 
 
@@ -81,11 +93,24 @@
 
 {% block script %}
 <script class="javascript">
-$("div.form-group input").addClass("form-control");
-$("div.form-group textarea").addClass("form-control")
-$("div.form-group select").addClass("form-control");
-$("#submitButton").click(function() {
-  $("#form").submit();
+$(function() {
+  $("div.form-group input").addClass("form-control");
+  $("div.form-group textarea").addClass("form-control")
+  $("div.form-group select").addClass("form-control");
+  $("#submitButton").click(function() {
+    $("#form").submit();
+  });
+  $("#button-query-params-toggle").click(function() {
+    $("#panel-query-params").toggle();
+    var button = $("#button-query-params-toggle span");
+    if (button.hasClass("glyphicon-chevron-up")) {
+      button.removeClass("glyphicon-chevron-up");
+      button.addClass("glyphicon-chevron-down");
+    } else {
+      button.removeClass("glyphicon-chevron-down");
+      button.addClass("glyphicon-chevron-up");
+    }
+  });
 });
 
 function gotoPage(page) {

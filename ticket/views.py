@@ -49,10 +49,9 @@ def detail(request, ticket_id):
     return render(request, 'ticket/ticket.html', {'form': form})
 
 
-
 @require_http_methods(['POST'])
 @login_required
-def comment(request):
+def comment(request, ticket_id):
     return render(request, 'ticket/ticket.html')
 
 
