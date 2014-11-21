@@ -2,7 +2,7 @@
 
 from django import forms
 
-from ticket.models import Ticket, Problem
+from ticket.models import Comment, Ticket, Problem, Visit
 
 class TicketForm(forms.ModelForm):
     user_id = forms.IntegerField(widget=forms.HiddenInput())
@@ -11,6 +11,17 @@ class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
         exclude = ['create_time', 'modify_time', 'creator', 'modifier']
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+
+class VisitForm(forms.ModelForm):
+    class Meta:
+        model = Visit
+        fields = ['content', 'status']
 
 
 def get_problem_choices():

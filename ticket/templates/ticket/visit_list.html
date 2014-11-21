@@ -1,0 +1,81 @@
+{% extends 'ticketsys/site.html' %}
+
+{% load staticfiles %}
+
+{% block title %}Ticket - Visits{% endblock %}
+
+{% block main_content %}
+
+<div class="row">
+  <div class="col-md-12">
+    <h1 class="page-header">Add Visit for Ticket <a href="{% url 'ticket:detail' ticket.pk %}">#{{ ticket.pk }}</a></h1>
+
+    <form action="{% url 'ticket:visit' ticket.pk %}" method="post" role="form" id="form">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group {% if field.errors %}has-error{% endif %}">
+	<label for="{{ field.id_for_label }}">{{ field.label }}</label>
+	{% if field.errors %}
+	{% for error in field.errors %}
+	<p class="text-danger">{{ error|escape }}</p>
+	{% endfor %}
+	{% endif %}
+	{{ field }}
+      </div>
+      {% endfor %}
+      <button type="button" id="submitButton" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h1 class="page-header">Visits</h1>
+  </div>
+</div>
+
+{% for visit in visits %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+	<strong>{{ visit.author.first_name }}&nbsp;{{ visit.author.last_name }}</strong>&nbsp;|&nbsp;{{ visit.get_status_display }}
+	<span class="pull-right">{{ visit.create_time }}</span>
+      </div>
+      <div class="panel-body">
+	<p>{{ visit.content }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% if visits.has_previous or visits.has_next %}
+<div class="row">
+  <div class="col-md-12">
+    <nav>
+      <ul class="pager">
+	{% if visits.has_previous %}
+	<li class="previous"><a href="?page={{ visits.previous_page_number }}"><span aria-hidden="true">&larr;</span>Older</a></li>
+	{% endif %}
+	{% if visits.has_next %}
+	<li class="next"><a href="?page={{ visits.next_page_number }}">Newer<span aria-hidden="true">&rarr;</span></a></li>
+	{% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+<script class="javascript">
+$(function() {
+  $("div.form-group textarea").addClass("form-control");
+  $("#submitButton").click(function() {
+    $("#form").submit();
+  });
+});
+</script>
+{% endblock %}

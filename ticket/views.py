@@ -8,7 +8,8 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from ticket.models import Ticket, Visit, Comment, Customer, CustomerArea
-from ticket.forms import TicketForm, TicketQueryForm
+from ticket.forms import TicketForm, TicketQueryForm, CommentForm, VisitForm
+
 
 @require_http_methods(['GET', 'POST'])
 @login_required
@@ -49,16 +50,76 @@ def detail(request, ticket_id):
     return render(request, 'ticket/ticket.html', {'form': form})
 
 
-@require_http_methods(['POST'])
+@require_http_methods(['GET', 'POST'])
 @login_required
 def comment(request, ticket_id):
-    return render(request, 'ticket/ticket.html')
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            instance = form.instance
+            instance.author = request.user
+            instance.ticket = ticket
+            instance.create_time = timezone.now()
+            instance.save()
+            form = CommentForm()
+    else:
+        form = CommentForm()
+
+    comment_list = Comment.objects.filter(ticket=ticket)
+
+    paginator = Paginator(comment_list, 10)
+    page = request.GET.get('page')
+    try:
+        comments = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        comments = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range, deliver last page of results.
+        comments = paginator.page(paginator.num_pages)
+
+    return render(request, 'ticket/comment_list.html', {
+        'ticket': ticket,
+        'form': form,
+        'comments': comments,
+    })
 
 
 @require_http_methods(['GET', 'POST'])
 @login_required
-def visit(request):
-    return render(request, 'ticket/ticket.html')
+def visit(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+    if request.method == 'POST':
+        form = VisitForm(request.POST)
+        if form.is_valid():
+            instance = form.instance
+            instance.author = request.user
+            instance.ticket = ticket
+            instance.create_time = timezone.now()
+            instance.save()
+            form = VisitForm()
+    else:
+        form = VisitForm()
+
+    visit_list = Visit.objects.filter(ticket=ticket)
+
+    paginator = Paginator(visit_list, 10)
+    page = request.GET.get('page')
+    try:
+        visits = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        visits = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range, deliver last page of results.
+        visits = paginator.page(paginator.num_pages)
+
+    return render(request, 'ticket/visit_list.html', {
+        'ticket': ticket,
+        'form': form,
+        'visits': visits,
+    })
 
 
 @require_http_methods(['GET'])
@@ -85,7 +146,6 @@ def index(request):
         'tickets': tickets,
         'form': form,
     })
-
 
 
 @require_http_methods(['GET'])
