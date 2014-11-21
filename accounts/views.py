@@ -2,10 +2,15 @@ from django.conf import settings
 from django.contrib.auth import authenticate as auth_authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render, resolve_url
 from django.views.decorators.http import require_http_methods
+
+from accounts.forms import UserProfileForm
+from accounts.models import UserProfile
+
 
 @require_http_methods(['GET', 'POST'])
 def login(request):
@@ -109,9 +114,30 @@ def home(request):
     return HttpResponseRedirect(resolve_url(settings.LOGIN_REDIRECT_URL))
 
 
+@require_http_methods(['GET', 'POST'])
 @login_required
 def profile(request):
-    context = {'user': request.user}
+    context = {}
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST)
+        if form.is_valid():
+            try:
+                profile = UserProfile.objects.get(user_id=request.user.id)
+                form.instance.pk = profile.pk
+            except ObjectDoesNotExist:
+                pass
+
+            form.instance.user = request.user
+            form.save()
+            context['info_message'] = 'Profile saved'
+    else:
+        try:
+            profile = UserProfile.objects.get(user_id=request.user.id)
+            form = UserProfileForm(instance=profile)
+        except ObjectDoesNotExist:
+            form = UserProfileForm()
+
+    context['form'] = form
     return render(request, 'accounts/profile.html', context)
 
 

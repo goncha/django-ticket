@@ -34,6 +34,7 @@ body {
       </ul>
       <ul class="nav navbar-nav navbar-right">
 	<p class="navbar-text">Signed in as {{ user }}</p>
+        <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
         <li><a href="{% url 'accounts:password' %}">Change Password</a></li>
         <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
       </ul>

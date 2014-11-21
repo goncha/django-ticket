@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
@@ -49,10 +50,20 @@ def visit(request):
 @require_http_methods(['GET'])
 @login_required
 def index(request):
-    context = {}
-    context['ticket_list'] = Ticket.objects.all()
+    ticket_list = Ticket.objects.all()
+    paginator = Paginator(ticket_list, 10)
 
-    return render(request, 'ticket/list.html', context)
+    page = request.GET.get('page')
+    try:
+        tickets = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        tickets = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range, deliver last page of results.
+        tickets = paginator.page(paginator.num_pages)
+
+    return render(request, 'ticket/list.html', {'tickets': tickets})
 
 
 @require_http_methods(['GET'])
