@@ -5,7 +5,7 @@ from django import forms
 from ticket.models import Comment, Ticket, Problem, Visit
 
 class TicketForm(forms.ModelForm):
-    user_id = forms.IntegerField(widget=forms.HiddenInput())
+    customer_id = forms.IntegerField(widget=forms.HiddenInput())
     area_id = forms.IntegerField(widget=forms.HiddenInput())
 
     class Meta:

@@ -63,14 +63,14 @@ function getCustomer(phone) {
     var values = data.values;
     if (values.length > 0) {
       var value = values[0];
-      $("#id_user_id").val(value.id);
-      $("#id_user_name").val(value.nick_name);
+      $("#id_customer_id").val(value.id);
+      $("#id_name").val(value.nick_name);
       getArea(value.area_id);
     }
   });
 }
 
-$("#id_user_phone").keyup(function() {
+$("#id_phone").keyup(function() {
   if (this.value.length == 11) {
     var newValue = this.value;
     var thisObj = $(this);

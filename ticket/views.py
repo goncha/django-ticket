@@ -2,6 +2,7 @@
 
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.urlresolvers import reverse
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
@@ -54,6 +55,7 @@ def detail(request, ticket_id):
 @login_required
 def comment(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
+
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -62,34 +64,32 @@ def comment(request, ticket_id):
             instance.ticket = ticket
             instance.create_time = timezone.now()
             instance.save()
-            form = CommentForm()
+            return redirect(reverse('ticket:comment', args=(ticket_id,)))
     else:
-        form = CommentForm()
+        comment_list = Comment.objects.filter(ticket=ticket)
+        paginator = Paginator(comment_list, 10)
+        page = request.GET.get('page')
+        try:
+            comments = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            comments = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            comments = paginator.page(paginator.num_pages)
 
-    comment_list = Comment.objects.filter(ticket=ticket)
-
-    paginator = Paginator(comment_list, 10)
-    page = request.GET.get('page')
-    try:
-        comments = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        comments = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range, deliver last page of results.
-        comments = paginator.page(paginator.num_pages)
-
-    return render(request, 'ticket/comment_list.html', {
-        'ticket': ticket,
-        'form': form,
-        'comments': comments,
-    })
+        return render(request, 'ticket/comment_list.html', {
+            'ticket': ticket,
+            'form': CommentForm(),
+            'comments': comments,
+        })
 
 
 @require_http_methods(['GET', 'POST'])
 @login_required
 def visit(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
+
     if request.method == 'POST':
         form = VisitForm(request.POST)
         if form.is_valid():
@@ -98,28 +98,25 @@ def visit(request, ticket_id):
             instance.ticket = ticket
             instance.create_time = timezone.now()
             instance.save()
-            form = VisitForm()
+            return redirect(reverse('ticket:visit', args=(ticket_id,)))
     else:
-        form = VisitForm()
+        visit_list = Visit.objects.filter(ticket=ticket)
+        paginator = Paginator(visit_list, 10)
+        page = request.GET.get('page')
+        try:
+            visits = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            visits = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            visits = paginator.page(paginator.num_pages)
 
-    visit_list = Visit.objects.filter(ticket=ticket)
-
-    paginator = Paginator(visit_list, 10)
-    page = request.GET.get('page')
-    try:
-        visits = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        visits = paginator.page(1)
-    except EmptyPage:
-        # If page is out of range, deliver last page of results.
-        visits = paginator.page(paginator.num_pages)
-
-    return render(request, 'ticket/visit_list.html', {
-        'ticket': ticket,
-        'form': form,
-        'visits': visits,
-    })
+        return render(request, 'ticket/visit_list.html', {
+            'ticket': ticket,
+            'form': VisitForm(),
+            'visits': visits,
+        })
 
 
 @require_http_methods(['GET'])
@@ -156,7 +153,6 @@ def customer(request, phone):
         values.append({'id': customer.id,
                        'area_id': customer.area_id,
                        'nick_name': customer.nick_name,
-                       'real_name': customer.real_name,
                        'phone': customer.phone})
     return JsonResponse({'values': values})
 
