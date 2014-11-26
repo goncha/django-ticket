@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
-from ticket.models import Comment, Ticket, Problem, Visit
+from ticket.models import Ticket, Problem, Visit
 
 class TicketForm(forms.ModelForm):
     customer_id = forms.IntegerField(widget=forms.HiddenInput())
@@ -10,13 +11,8 @@ class TicketForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        exclude = ['create_time', 'modify_time', 'creator', 'modifier']
+        exclude = ['create_time', 'modify_time', 'creator', 'modifier', 'solution', 'solver', 'solve_time']
 
-
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['content']
 
 class VisitForm(forms.ModelForm):
     class Meta:
@@ -29,12 +25,11 @@ def get_problem_choices():
 
 
 class TicketQueryForm(forms.Form):
-    summary = forms.CharField(label='Summary', required=False)
-    begin_date = forms.DateField(label='Begin Date', required=False)
-    end_date = forms.DateField(label='End Date', required=False)
-    problem = forms.ChoiceField(label='Problem', choices=get_problem_choices(), required=False)
-    solution = forms.ChoiceField(label='Solution', choices=Ticket.SOLUTION_LIST, required=False)
-    status = forms.ChoiceField(label='Status', choices=Ticket.STATUS_CHOICES, required=False)
+    begin_date = forms.DateField(label=_('Begin Date'), required=False)
+    end_date = forms.DateField(label=_('End Date'), required=False)
+    problem = forms.ChoiceField(label=_('Problem'), choices=get_problem_choices(), required=False)
+    need_support = forms.BooleanField(label=_('Need support'), required=False)
+    status = forms.ChoiceField(label=_('Status'), choices=Ticket.STATUS_CHOICES, required=False)
 
 # Local Variables: **
 # comment-column: 56 **

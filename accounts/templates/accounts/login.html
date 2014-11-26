@@ -1,8 +1,9 @@
 {% extends 'ticketsys/site_base.html' %}
 
+{% load i18n %}
 {% load staticfiles %}
 
-{% block title %}Ticket - Login{% endblock %}
+{% block title %}Ticket - {% trans 'Login' %}{% endblock %}
 
 {% block style %}
 <link rel="stylesheet" href="{% static 'accounts/css/form.css' %}" type="text/css" media="screen" />
@@ -11,20 +12,20 @@
 {% block content %}
 <div class="container">
 <form class="form-signin" method="post" action="{% url 'accounts:login' %}" role="form">
-<h2 class="form-signin-heading">Login Ticket</h2>
+<h2 class="form-signin-heading">{% trans 'Login' %} Ticket</h2>
 {% if error_message %}
 <p class="text-danger">{{ error_message }}</p>
 {% endif %}
 {% csrf_token %}
-<label for="inputUsername" class="sr-only">Username</label>
-<input type="text" id="inputUsername" class="form-control" name="username" value="{{ username }}" placeholder="Username" required autofocus/>
-<label for="inputPassword" class="sr-only">Password</label>
-<input type="password" id="inputPassword" class="form-control" name="password" value="" placeholder="Password" required/>
+<label for="inputUsername" class="sr-only">{% trans 'Username' %}</label>
+<input type="text" id="inputUsername" class="form-control" name="username" value="{{ username }}" placeholder="{% trans 'Username' %}" required autofocus/>
+<label for="inputPassword" class="sr-only">{% trans 'Password' %}</label>
+<input type="password" id="inputPassword" class="form-control" name="password" value="" placeholder="{% trans 'Password' %}" required/>
 <input type="hidden" name="next" value="{{ next }}"/>
-<input type="submit" class="btn btn-lg btn-primary btn-block" name="" value="Login" />
+<input type="submit" class="btn btn-lg btn-primary btn-block" name="" value="{% trans 'Login' %}" />
 <br />
 <br />
-Not a member of this site, please contact administrator.
+{% trans 'Not a member of this site, please contact administrator.' %}
 </form>
 </div>
 {% endblock %}

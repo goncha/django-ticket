@@ -8,8 +8,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
-from ticket.models import Ticket, Visit, Comment, Customer, CustomerArea
-from ticket.forms import TicketForm, TicketQueryForm, CommentForm, VisitForm
+from ticket.models import Ticket, Visit, Customer, CustomerArea
+from ticket.forms import TicketForm, TicketQueryForm, VisitForm
 
 
 @require_http_methods(['GET', 'POST'])

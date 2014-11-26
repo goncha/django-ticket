@@ -1,42 +1,43 @@
 {% extends 'ticketsys/site_base.html' %}
 
+{% load i18n %}
 {% load staticfiles %}
 
-{% block title %}Ticket - Home{% endblock %}
+{% block title %}Ticket - {% trans 'Home' %}{% endblock %}
 
-{% block style %}
-<style type="text/css" media="screen">
-body {
-  min-height: 500px;
-  padding-top: 70px;
-  padding-bottom: 40px;
-}
-</style>
-{% endblock %}
+ {% block style %}
+ <style type="text/css" media="screen">
+ body {
+   min-height: 500px;
+   padding-top: 70px;
+   padding-bottom: 40px;
+ }
+ </style>
+ {% endblock %}
 
-{% block content %}
-<!-- Fixed navbar -->
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="{% url 'home' %}">Ticket</a>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        <li><a href="{% url 'ticket:new' %}">New</a></li>
-        <li><a href="{% url 'ticket:index' %}">Browse</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-	<p class="navbar-text">Signed in as {{ user }}</p>
-        <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
-        <li><a href="{% url 'accounts:password' %}">Change Password</a></li>
-        <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+ {% block content %}
+ <!-- Fixed navbar -->
+ <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+   <div class="container">
+     <div class="navbar-header">
+       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+	 <span class="sr-only">Toggle navigation</span>
+	 <span class="icon-bar"></span>
+	 <span class="icon-bar"></span>
+	 <span class="icon-bar"></span>
+       </button>
+       <a class="navbar-brand" href="{% url 'home' %}">Ticket</a>
+     </div>
+     <div id="navbar" class="navbar-collapse collapse">
+       <ul class="nav navbar-nav">
+	 <li><a href="{% url 'ticket:new' %}">{% trans 'New' %}</a></li>
+	 <li><a href="{% url 'ticket:index' %}">{% trans 'Browse' %}</a></li>
+       </ul>
+       <ul class="nav navbar-nav navbar-right">
+	 <p class="navbar-text">{% blocktrans %}Signed in as {{ user }}{% endblocktrans %}</p>
+         <li><a href="{% url 'accounts:profile' %}">{% trans 'Profile' %}</a></li>
+         <li><a href="{% url 'accounts:password' %}">{% trans 'Change Password' %}</a></li>
+         <li><a href="{% url 'accounts:logout' %}">{% trans 'Logout' %}</a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div>

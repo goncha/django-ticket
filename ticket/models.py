@@ -67,60 +67,40 @@ class Ticket(models.Model):
         verbose_name = _('ticket')
         verbose_name_plural = _('tickets')
 
-    STATUS_OPEN = 'open'
-    STATUS_CLOSED = 'closed'
+    STATUS_OPEN = 0
+    STATUS_CLOSED = 1
+    STATUS_FIXED = 2
     STATUS_CHOICES = (
         (STATUS_OPEN, _('Open')),
         (STATUS_CLOSED, _('Closed')),
-    )
-
-    SOLUTION_CUSTOMER = 'customer'
-    SOLUTION_SERVICE = 'service'
-    SOLUTION_PRODUCT = 'product'
-    SOLUTION_OPERATION = 'operation'
-    SOLUTION_LIST = (
-        (SOLUTION_CUSTOMER, _('Customer Group')),
-        (SOLUTION_SERVICE, _('Service Group')),
-        (SOLUTION_PRODUCT, _('Product Group')),
-        (SOLUTION_OPERATION, _('Operation Group')),
+        (STATUS_FIXED, _('Fixed')),
     )
 
     customer_id = models.BigIntegerField(_('customer ref'))
     phone = models.CharField(_('customer phone'), max_length=16)
     name = models.CharField(_('customer name'), max_length=16)
+    contact_phone = models.CharField(_('contract phone'), max_length=16)
     area_id = models.BigIntegerField(_('area ref'))
     area_name = models.CharField(_('customer area'), max_length=128)
     building = models.CharField(_('building'), max_length=16)
     room = models.CharField(_('room'), max_length=16)
     device_model = models.CharField(_('device model'), max_length=16)
     device_os = models.CharField(_('device os'), max_length=16)
-    summary = models.CharField(_('summary'), max_length=64)
-    description = models.TextField(_('description'), blank=True)
     problem = models.ForeignKey(Problem, verbose_name=_('problem'), related_name='+')
+    description = models.TextField(_('description'))
     channel = models.ForeignKey(Channel, verbose_name=_('channel'), related_name='+')
-    solution = models.CharField(_('solution'), max_length=16, choices=SOLUTION_LIST, default=SOLUTION_SERVICE)
+    need_support = models.BooleanField(_('need support'), default=False)
     status = models.CharField(_('status'), max_length=16, choices=STATUS_CHOICES, default=STATUS_OPEN)
     create_time = models.DateTimeField(_('create time'))
     modify_time = models.DateTimeField(_('modify time'))
     creator = models.ForeignKey(User, verbose_name=_('creator'), related_name='+')
-    modifier = models.ForeignKey(User, verbose_name=_('modifier'), related_name='+', null=True, blank=True)
-
-    def __unicode__(self):
-        return self.summary
+    modifier = models.ForeignKey(User, verbose_name=_('modifier'), related_name='+')
+    solution = models.TextField(_('solution'), null=True, blank=True)
+    solver = models.ForeignKey(User, verbose_name=_('solver'), related_name='+', null=True, blank=True)
+    solve_time = models.DateTimeField(_('solve time'), null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('ticket:detail', args=(self.id,))
-
-
-class Comment(models.Model):
-    class Meta:
-        verbose_name = _('comment')
-        verbose_name_plural = _('comments')
-
-    ticket = models.ForeignKey(Ticket, verbose_name=_('ticket'), related_name='comment_set')
-    author = models.ForeignKey(User, verbose_name=_('author'), related_name='+')
-    content = models.TextField(_('content'))
-    create_time = models.DateTimeField(_('create time'))
 
 
 class Visit(models.Model):

@@ -6,7 +6,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render, resolve_url
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods
+
 
 from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
@@ -27,9 +29,9 @@ def login(request):
                        resolve_url(settings.LOGIN_REDIRECT_URL)
                 return HttpResponseRedirect(next)
             else:
-                context['error_message'] = 'Disabled account'
+                context['error_message'] = _('Disabled account')
         else:
-            context['error_message'] = 'Invalid username or password'
+            context['error_message'] = _('Invalid username or password')
         context['username'] = username
     else:                       # GET method
         if request.user.is_authenticated():
@@ -63,11 +65,11 @@ def register(request):
                         'login_url': resolve_url(settings.LOGIN_URL),
                     })
                 else:
-                    context['error_message'] = 'User already exists'
+                    context['error_message'] = _('User already exists')
             else:
-                context['error_message'] = 'Password not matched'
+                context['error_message'] = _('Password not matched')
         else:
-            context['error_message'] = 'Empty username or password'
+            context['error_message'] = _('Empty username or password')
     else:                       # GET method
         if request.user.is_authenticated():
             return HttpResponseRedirect(resolve_url(settings.LOGIN_REDIRECT_URL))
@@ -91,14 +93,14 @@ def password(request):
                     user = User.objects.get(username=username)
                     user.set_password(password)
                     user.save()
-                    context['info_message'] = "Password has been changed"
+                    context['info_message'] = _("New password saved")
                 except User.DoesNotExist:
                     logout(request)
                     return HttpResponseNotFound("User `%s` not found" % (username,))
             else:
-                context['error_message'] = 'Password not matched'
+                context['error_message'] = _('Password not matched')
         else:
-            context['error_message'] = 'Empty password'
+            context['error_message'] = _('Empty password')
 
     return render(request, 'accounts/password.html', context)
 
@@ -129,7 +131,7 @@ def profile(request):
 
             form.instance.user = request.user
             form.save()
-            context['info_message'] = 'Profile saved'
+            context['info_message'] = _('Profile saved')
     else:
         try:
             profile = UserProfile.objects.get(user_id=request.user.id)

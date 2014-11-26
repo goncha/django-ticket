@@ -1,5 +1,6 @@
 {% extends 'ticketsys/site.html' %}
 
+{% load i18n %}
 {% load staticfiles %}
 
 {% block main_content %}
@@ -7,9 +8,9 @@
 <div class="col-md-offset-2 col-md-8 col-md-offset-1 col-xs-10">
 <h1 class="page-header">
 {% if form.instance.pk %}
-Ticket #{{ form.instance.pk }}
+{% trans 'Ticket' %} #{{ form.instance.pk }}
 {% else %}
-Create new ticket
+{% trans 'Create new ticket' %}
 {% endif %}
 </h1>
 </div>
@@ -31,7 +32,7 @@ Create new ticket
   {{ field }}
 </div>
 {% endfor %}
-<button type="button" id="submitButton" class="btn btn-primary">Save</button>
+<button type="button" id="submitButton" class="btn btn-primary">{% trans 'Save' %}</button>
 </form>
 </div>
 </div>
@@ -46,6 +47,16 @@ $("div.form-group select").addClass("form-control");
 $("#submitButton").click(function() {
   $("#form").submit();
 });
+
+// Fix bootstrap style
+var needSupportChk = $("#id_need_support").removeClass("form-control")[0];
+var needSupportLbl = needSupportChk.previousElementSibling;
+needSupportChk.parentElement.removeChild(needSupportChk);
+needSupportLbl.insertBefore(needSupportChk, needSupportLbl.firstChild);
+$(needSupportLbl.parentElement).removeClass("form-group").addClass("checkbox");
+
+// Add phone check mark
+$("<span class=\"glyphicon form-control-feedback\" aria-hidden=\"true\"></span>").appendTo($("#id_phone")[0].parentElement)
 
 function getArea(id) {
   $.get("{% url 'ticket:index' %}customer_area/" + id + "/", function(data) {
@@ -65,7 +76,9 @@ function getCustomer(phone) {
       var value = values[0];
       $("#id_customer_id").val(value.id);
       $("#id_name").val(value.nick_name);
+      $("#id_contact_phone").val(phone);
       getArea(value.area_id);
+      $($("#id_phone")[0].parentElement).addClass("has-feedback", "has-success");
     }
   });
 }
